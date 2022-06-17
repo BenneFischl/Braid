@@ -86,7 +86,7 @@ class word:
             to_be_print += "\n"
         return to_be_print
 
-    def gamma(self, ):
+    def gamma(self, i):
         """
         Input i meanning \sigma_i^{-1}.
         This function does the \Delta^{-1}X\Delta function, the
@@ -122,6 +122,16 @@ class word:
                 k += 1
         # rearrange the word into the form \Delta^iZ
         self.inf = len(poslist)
+        newlist = ["d" + str(self.inf)]
+        if self.inf % 2:
+            newlist += self.oplist[:poslist[0]]
+            poslist.pop(0)
+        for i in range(len(poslist)):
+            newlist += 1
+            pass
+            
+                
+        
         
         
                 
