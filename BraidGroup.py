@@ -96,39 +96,46 @@ class word:
 
     def sigma_inv(self, i):
         """
-        Input i means \sigma_i^{-1}.
-        This function convert \sigma_i^{-1} into R_i\Delta^{-1} and returns R_i.
+        Input i means \sigma_{-i}^{-1}.
+        This function convert \sigma_{-i}^{-1} into R_{-i}\Delta^{-1}
+        and returns R_{-i}.
         """
-        if i > self.n - 1:
+        if -i > self.n - 1:
             raise IndexError
         R_i = []
         for j in self.Delta:
             R_i.append(j)
-        R_i.pop((2*self.n-i)*(i-1)//2)
+        R_i.pop((2*self.n+i)*(-i-1)//2)
         return R_i
 
     def neg_inv(self):
         """This function converts a word into form \Delta^iZ."""
         # change all negative operations into positive ones
         k = 0
-        poslist = []
+        dcount = 0
         while k<len(self.oplist):
             if self.oplist[k] < 0:
                 ist = self.sigma_inv(self.oplist[k])
                 self.oplist = self.oplist[:k] + ist + ['d'] + self.oplist[k+1:]
                 k += len(ist)
-                poslist.append(k+len(ist))
-            else:
-                k += 1
+                dcount += 1
+            k += 1
         # rearrange the word into the form \Delta^iZ
-        self.inf = len(poslist)
-        newlist = ["d" + str(self.inf)]
-        if self.inf % 2:
-            newlist += self.oplist[:poslist[0]]
-            poslist.pop(0)
-        for i in range(len(poslist)):
-            newlist += 1
-            pass
+        self.inf = dcount
+        revlist = self.oplist[::-1]
+        newlist = []
+        mult = 1
+        for i in revlist:
+            if isinstance(i, int):
+                newlist.append(i*mult)
+            else:
+                mult *= -1
+        for i in range(len(newlist)):
+            if newlist[i]<0:
+                newlist[i] += self.n
+        newlist.append("d" + str(self.inf))
+        rtlist = newlist[::-1]
+        return rtlist
             
                 
         
@@ -139,11 +146,12 @@ class word:
                 
         
 w3 = word(3)
-p = w3.sigma_inv(1)
-w3.oplist = p + w3.Delta_inv
-w3.pn_huajian()
+#p = w3.sigma_inv(-1)
+w3.oplist = [-1]
+print(w3.neg_inv())
+
 
 w11 = word(11)
-p = w11.sigma_inv(3)
-w11.oplist = p + w11.Delta_inv
-w11.pn_huajian()
+#p = w11.sigma_inv(-3)
+w11.oplist = [-3]
+print(w11.neg_inv())
