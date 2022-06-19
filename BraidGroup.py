@@ -114,7 +114,7 @@ class word:
         k = 0
         dcount = 0
         while k<len(self.oplist):
-            if self.oplist[k] < 0:
+            if isinstance(self.oplist[k], int) and self.oplist[k] < 0:
                 ist = self.sigma_inv(self.oplist[k])
                 self.oplist = self.oplist[:k] + ist + ['d'] + self.oplist[k+1:]
                 k += len(ist)
@@ -136,15 +136,10 @@ class word:
         newlist.append("d" + str(self.inf))
         rtlist = newlist[::-1]
         return rtlist
-            
-                
-        
-        
-        
-                
-                
-                
-        
+
+
+
+    
 w3 = word(3)
 #p = w3.sigma_inv(-1)
 w3.oplist = [-1]
@@ -155,3 +150,7 @@ w11 = word(11)
 #p = w11.sigma_inv(-3)
 w11.oplist = [-3]
 print(w11.neg_inv())
+
+w9 = word(9)
+w9.oplist = [1, 2, 3, 4, 5, -1, -3]
+print(w9.neg_inv())
