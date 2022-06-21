@@ -9,10 +9,6 @@ class word:
         """
         
         self.n = n
-        printstr = ''
-        for i in range(self.n):
-            printstr += '| '
-        self.prtunit = printstr
         self.oplist = []
         self.Delta = []
         for i in range(n-1):
@@ -21,45 +17,6 @@ class word:
         self.Delta_inv = []
         for i in range(len(self.Delta)):
             self.Delta_inv.append(-self.Delta[-i-1])
-
-    def op(self, i):
-        """
-        i: swap ith and (i+1)th string with ith string under (i+1)th
-        enter minus value to make inverse.
-        """
-        self.oplist.append(i)
-
-    def __str__(self):
-        prt = [self.prtunit]
-        for i in self.oplist:
-            if isinstance(i, int):
-                ai = abs(i)
-                line = ''
-                for j in range(ai-1):
-                    line += '| '
-                line1 = line + '\ / '
-                line3 = line + '/ \ '
-                if i > 0:
-                    line2 = line + ' /  '
-                else:
-                    line2 = line + ' \  '
-                line = ''
-                for j in range(self.n-ai-1):
-                    line += '| '
-                line1 += line
-                line2 += line
-                line3 += line
-                prt.append(line1)
-                prt.append(line2)
-                prt.append(line3)
-                prt.append(self.prtunit)
-            else:
-                prt.append('d')
-        to_be_print = ''
-        for k in prt:
-            to_be_print += k
-            to_be_print += "\n"
-        return to_be_print
 
     def sigma_inv(self, i):
         """
@@ -103,3 +60,83 @@ class word:
         newlist.append("d" + str(self.inf))
         rtlist = newlist[::-1]
         return rtlist
+
+    def SnF(self):
+        plist = self.neg_inv()
+        strand_list = [i+1 for i in range(self.n)]
+        past_op_list = []
+        A_list = []
+        Ai_list = []
+        SAi_list = []
+        FAi_list = []
+        for i in range(1, len(plist)):
+            p = plist[i]
+            si, si1 = strand_list[p-1], strand_list[p]
+            if si < si1:
+                optp = (si, si1)
+            else:
+                optp = (si1, si)
+            if optp not in past_op_list:
+                past_op_list.append(optp)
+                A_list.append(p)
+            else:
+                Ai_list.append(A_list)
+                SAi_list.append(past_op_list)
+                f = []
+                for j in past_op_list:
+                    fi = strand_list.index(j[0]) + 1
+                    fi1 = strand_list.index(j[1]) + 1
+                    if fi < fi1:
+                        f.append((fi, fi1))
+                    else:
+                        f.append((fi1, fi))
+                FAi_list.append(f)
+                strand_list = [i+1 for i in range(self.n)]
+                A_list = [p]
+                past_op_list = [optp]
+            strand_list[p-1], strand_list[p] = si1, si
+        Ai_list.append(A_list)
+        SAi_list.append(past_op_list)
+        f = []
+        for j in past_op_list:
+            fi = strand_list.index(j[0]) + 1
+            fi1 = strand_list.index(j[1]) + 1
+            if fi < fi1:
+                f.append((fi, fi1))
+            else:
+                f.append((fi1, fi))
+        FAi_list.append(f)
+        return Ai_list, SAi_list, FAi_list
+
+    def SinFcheck(self, Slist, Flist):
+        for i in range(len(Slist)-1):
+            for j in Slist[i+1]:
+                if j not in Flist[i]:
+                    return i, j
+        return False
+
+    def nmlise(self):
+        A, S, F = self.SnF()
+        while self.SinFcheck(S, F):
+            pass
+                
+                
+            
+
+w3 = word(3)
+#p = w3.sigma_inv(-1)
+w3.oplist = [-1]
+print(w3.neg_inv())
+print(w3.SnF())
+
+
+w11 = word(11)
+#p = w11.sigma_inv(-3)
+w11.oplist = [-3]
+print(w11.neg_inv())
+print(w11.SnF())
+
+w9 = word(9)
+w9.oplist = [1, 2, 3, 4, 5, -1, -3]
+print(w9.neg_inv())
+print(w9.SnF())
