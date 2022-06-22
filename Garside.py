@@ -1,13 +1,7 @@
-"""This is just the same code but cleaner. """
 
 class word:
-    """ A word. """
-
+    
     def __init__(self, n):
-        """
-        n: number of strings, i.e. construct a word in B_n braid group.
-        """
-        
         self.n = n
         self.oplist = []
         self.Delta = []
@@ -19,11 +13,6 @@ class word:
             self.Delta_inv.append(-self.Delta[-i-1])
 
     def sigma_inv(self, i):
-        """
-        Input i means \sigma_{-i}^{-1}.
-        This function convert \sigma_{-i}^{-1} into R_{-i}\Delta^{-1}
-        and returns R_{-i}.
-        """
         if -i > self.n - 1:
             raise IndexError
         R_i = []
@@ -33,7 +22,6 @@ class word:
         return R_i
 
     def neg_inv(self):
-        """This function converts a word into form \Delta^iZ."""
         # change all negative operations into positive ones
         k = 0
         dcount = 0
@@ -69,6 +57,7 @@ class word:
         Ai_list = []
         SAi_list = []
         FAi_list = []
+        permutation = []
         for i in range(1, len(plist)):
             p = plist[i]
             si, si1 = strand_list[p-1], strand_list[p]
@@ -91,6 +80,7 @@ class word:
                     else:
                         f.append((fi1, fi))
                 FAi_list.append(f)
+                permutation.append(strand_list)
                 strand_list = [i+1 for i in range(self.n)]
                 A_list = [p]
                 past_op_list = [optp]
@@ -106,7 +96,7 @@ class word:
             else:
                 f.append((fi1, fi))
         FAi_list.append(f)
-        return Ai_list, SAi_list, FAi_list
+        return Ai_list, SAi_list, FAi_list, permutation
 
     def SinFcheck(self, Slist, Flist):
         for i in range(len(Slist)-1):
@@ -116,9 +106,25 @@ class word:
         return False
 
     def nmlise(self):
-        A, S, F = self.SnF()
-        while self.SinFcheck(S, F):
-            pass
+        A, S, F, P = self.SnF()
+        for i in range(len(A)-1):
+            sf = self.SinFcheck(S, F)
+            if sf:
+                self.inf += 1
+                A[sf[0]].append(sf[1])
+                P[sf[0]][sf[1]-1], P[sf[0]][sf[1]] = P[sf[0]][sf[1]], \
+                                                     P[sf[0]][sf[1]-1]
+                for j in range(:sf[0]+1):
+                    A[j] = [self.n-k for k in A[j]]
+                    P[j] = [self.n-m for m in P[j][::-1]]
+                A[sf[0]+1] = [self.n-k for k in [self.sigma_inv(-sf[1])]] \
+                             + A[sf[0]+1]
+                
+                return self.nmlise()
+        
+        return 
+            
+                    
                 
                 
             
